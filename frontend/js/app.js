@@ -163,11 +163,16 @@ function handleFileSelection(file) {
     }
     
     selectedFile = file;
-    fileName.textContent = file.name;
-    fileSize.textContent = formatFileSize(file.size);
     
-    uploadZone.style.display = 'none';
-    fileInfo.classList.add('visible');
+    // Show image preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imagePreview.src = e.target.result;
+      imageFilename.textContent = file.name;
+      imagePreviewContainer.classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+    
     hideError();
 }
 
@@ -268,36 +273,31 @@ function displayResults(result) {
     confidenceValue.textContent = confidence + '%';
     confidenceFill.style.width = confidence + '%';
     
-    // Update content preview
-    const contentPreview = document.getElementById('content-preview');
-    contentPreview.textContent = result.content_preview || 'No preview available';
+    // Determine risk level class
+    const riskClass = getRiskClass(color, score);
+    resultCard.classList.remove('risk-low', 'risk-medium', 'risk-high');
+    resultCard.classList.add(riskClass);
     
-    // Update reasons
-    const reasonsList = document.getElementById('reasons-list');
-    reasonsList.innerHTML = '';
-    const reasons = result.reasons || [];
-    if (reasons.length > 0) {
-        reasons.forEach(reason => {
-            const li = document.createElement('li');
-            li.textContent = reason;
-            reasonsList.appendChild(li);
-        });
-    } else {
+    // Badge text
+    const badgeText =
+      riskClass === 'risk-low'
+        ? 'Low risk'
+        : riskClass === 'risk-medium'
+        ? 'Moderate risk'
+        : 'High risk';
+    resultBadge.textContent = badgeText;
+    
+    // Explanation
+    resultExplanation.textContent = explanation;
+    
+    // Extra insights
+    resultDetailsList.innerHTML = '';
+    if (Array.isArray(extra) && extra.length > 0) {
+      extra.forEach((item) => {
         const li = document.createElement('li');
-        li.textContent = 'No specific findings to report';
-        reasonsList.appendChild(li);
-    }
-    
-    // Update tips
-    const tipsList = document.getElementById('tips-list');
-    tipsList.innerHTML = '';
-    const tips = result.tips || [];
-    if (tips.length > 0) {
-        tips.forEach(tip => {
-            const li = document.createElement('li');
-            li.textContent = tip;
-            tipsList.appendChild(li);
-        });
+        li.textContent = item;
+        resultDetailsList.appendChild(li);
+      });
     } else {
         const li = document.createElement('li');
         li.textContent = 'Always verify information with multiple reliable sources';

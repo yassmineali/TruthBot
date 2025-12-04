@@ -1,175 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TruthBot - AI Misinformation Detector</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>TruthBot – AI Content Risk Analyzer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Embedded stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <div class="logo-icon">🔍</div>
-                <div class="logo-text">
-                    <h1>TruthBot</h1>
-                    <p class="tagline">AI-Powered Misinformation Detection</p>
-                </div>
-            </div>
-        </header>
+  <div class="app">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">🤖</div>
+        <div class="brand-text">
+          <h1>TruthBot</h1>
+          <p>AI-powered analysis of text & images</p>
+        </div>
+      </div>
+    </header>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Input Section -->
-            <section class="input-section">
-                <div class="tabs">
-                    <button type="button" class="tab-btn active" data-tab="text">
-                        <span class="tab-icon">📝</span>
-                        <span>Text Analysis</span>
-                    </button>
-                    <button type="button" class="tab-btn" data-tab="file">
-                        <span class="tab-icon">📁</span>
-                        <span>File Upload</span>
-                    </button>
-                </div>
-
-                <!-- Text Input Tab -->
-                <div class="tab-content active" id="text-tab">
-                    <div class="input-group">
-                        <label for="text-input">Enter text to analyze:</label>
-                        <textarea 
-                            id="text-input" 
-                            placeholder="Paste a tweet, article excerpt, news headline, or any text you want to verify for misinformation..."
-                            rows="8"
-                        ></textarea>
-                        <div class="input-footer">
-                            <span class="char-count" id="char-count">0 characters</span>
-                            <button type="button" class="btn btn-primary" id="analyze-text-btn">
-                                <span class="btn-icon">🔍</span>
-                                <span>Analyze Text</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- File Upload Tab -->
-                <div class="tab-content" id="file-tab">
-                    <div class="upload-zone" id="upload-zone">
-                        <div class="upload-icon">📄</div>
-                        <p class="upload-text">Drag & drop your file here</p>
-                        <p class="upload-subtext">or click to browse</p>
-                        <p class="file-types">Supports: PDF, DOCX, TXT, JPG, PNG, GIF</p>
-                        <input type="file" id="file-input" accept=".txt,.pdf,.docx,.doc,.jpg,.jpeg,.png,.gif" hidden>
-                    </div>
-                    <div class="file-info" id="file-info">
-                        <div class="file-preview">
-                            <span class="file-icon">📎</span>
-                            <div class="file-details">
-                                <p class="file-name" id="file-name"></p>
-                                <p class="file-size" id="file-size"></p>
-                            </div>
-                            <button class="btn-remove" id="remove-file-btn" title="Remove file">✕</button>
-                        </div>
-                        <button type="button" class="btn btn-primary" id="analyze-file-btn">
-                            <span class="btn-icon">🔍</span>
-                            <span>Analyze File</span>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Loading Indicator -->
-            <div class="loading" id="loading">
-                <div class="loading-content">
-                    <div class="spinner"></div>
-                    <p class="loading-text">Analyzing content with AI...</p>
-                    <p class="loading-subtext">This may take a few seconds</p>
-                </div>
-            </div>
-
-            <!-- Results Section -->
-            <section class="results-section" id="results-section">
-                <div class="results-header">
-                    <h2>📊 Analysis Results</h2>
-                    <button class="btn btn-outline" id="new-analysis-btn">
-                        <span>+ New Analysis</span>
-                    </button>
-                </div>
-                
-                <div class="result-card">
-                    <!-- Reliability Badge -->
-                    <div class="result-summary">
-                        <div class="reliability-badge" id="reliability-badge">
-                            <span class="badge-icon" id="badge-icon">⚠️</span>
-                            <div class="badge-info">
-                                <span class="badge-label">Status</span>
-                                <span class="badge-text" id="badge-text">Unknown</span>
-                            </div>
-                        </div>
-                        <div class="confidence-meter">
-                            <span class="confidence-label">Confidence</span>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" id="confidence-fill"></div>
-                            </div>
-                            <span class="confidence-value" id="confidence-value">0%</span>
-                        </div>
-                    </div>
-
-                    <!-- Content Preview -->
-                    <div class="result-section">
-                        <h3>📋 Content Preview</h3>
-                        <div class="content-preview-box">
-                            <p id="content-preview"></p>
-                        </div>
-                    </div>
-
-                    <!-- Reasons -->
-                    <div class="result-section">
-                        <h3>🔎 Key Findings</h3>
-                        <ul class="reasons-list" id="reasons-list"></ul>
-                    </div>
-
-                    <!-- Tips -->
-                    <div class="result-section">
-                        <h3>💡 Verification Tips</h3>
-                        <ul class="tips-list" id="tips-list"></ul>
-                    </div>
-
-                    <!-- Detailed Analysis -->
-                    <div class="result-section collapsible" id="analysis-details-section">
-                        <button class="collapse-toggle" id="toggle-details">
-                            <h3>📝 Detailed Analysis</h3>
-                            <span class="toggle-icon">▼</span>
-                        </button>
-                        <div class="collapse-content" id="collapse-content">
-                            <div class="analysis-details-box">
-                                <p id="analysis-details"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Error Section -->
-            <div class="error-section" id="error-section">
-                <div class="error-content">
-                    <span class="error-icon">⚠️</span>
-                    <p class="error-message" id="error-message"></p>
-                    <button class="btn btn-secondary" id="retry-btn">Try Again</button>
-                </div>
-            </div>
-        </main>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p>TruthBot - AI4GOOD Challenge | Nuit de l'Info 2024</p>
-            <p class="disclaimer">⚠️ This tool provides AI-assisted analysis. Always verify through multiple reliable sources.</p>
-        </footer>
+    <!-- Description -->
+    <div class="app-description">
+      <p><strong>I'm TruthBot,</strong> your AI-powered assistant for analyzing text and images.</p>
+      <p>I don't declare absolute truth — instead, I detect patterns, risks, and inconsistencies to help you make informed decisions online.</p>
     </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/app.js"></script>
+    <!-- Main Content -->
+    <main class="app-main">
+      <!-- Results Section (shown after analysis) -->
+      <section class="result-section hidden" id="result-section">
+        <div class="result-card" id="result-card">
+          <div class="result-header">
+            <div class="result-status">
+              <span class="result-label" id="result-label">Result</span>
+              <span class="result-score" id="result-score">–</span>
+            </div>
+            <div class="result-badge" id="result-badge">Risk level</div>
+          </div>
+
+          <div class="result-body">
+            <div class="result-row">
+              <h3 class="result-subtitle">Explanation</h3>
+              <p class="result-text" id="result-explanation">
+                The detailed explanation from the model will appear here.
+              </p>
+            </div>
+
+            <div class="result-row" id="result-extra-row">
+              <h3 class="result-subtitle">Additional Insights</h3>
+              <ul class="result-list" id="result-details-list">
+                <!-- dynamic list items -->
+              </ul>
+            </div>
+          </div>
+
+          <button class="btn-new-analysis" id="new-analysis-btn">New Analysis</button>
+        </div>
+      </section>
+
+      <!-- Input Section (main interface) -->
+      <section class="input-section" id="input-section">
+        <div class="input-container">
+          <!-- Error Banner -->
+          <div class="error-banner hidden" id="error-banner">
+            <span class="error-icon">⚠️</span>
+            <span id="error-message">Something went wrong.</span>
+          </div>
+
+          <!-- Text Input with Plus Button -->
+          <div class="input-mode" id="text-mode">
+            <div class="text-input-wrapper">
+              <textarea
+                id="text-input"
+                class="text-input"
+                placeholder="What would you like to analyze?"
+              ></textarea>
+              <button class="btn-plus" id="btn-plus" title="Add image">
+                <span>+</span>
+              </button>
+              <!-- Attachment Menu -->
+              <div class="attachment-menu hidden" id="attachment-menu">
+                <button class="attachment-option" id="attach-image">
+                  <span class="attachment-icon">🖼</span>
+                  <span>Upload Image</span>
+                </button>
+              </div>
+            </div>
+            <div class="input-meta">
+              <span id="char-counter" class="char-counter">0 characters</span>
+            </div>
+          </div>
+
+          <!-- Hidden File Input -->
+          <input
+            type="file"
+            id="file-input"
+            accept="image/png,image/jpeg,image/jpg,image/gif"
+            class="file-input hidden"
+          />
+
+          <!-- Image Preview (shown when image is selected) -->
+          <div class="image-preview-container hidden" id="image-preview-container">
+            <div class="image-preview">
+              <img id="image-preview" src="" alt="Preview" />
+              <button type="button" class="btn-close-preview" id="btn-close-preview">✕</button>
+            </div>
+            <p class="image-filename" id="image-filename"></p>
+          </div>
+
+          <!-- Image Mode (for drag and drop) -->
+          <div class="input-mode hidden" id="image-mode">
+            <div class="dropzone" id="dropzone">
+              <div class="dropzone-content">
+                <div class="dropzone-icon">📸</div>
+                <p class="dropzone-title">Click to upload or drag image</p>
+                <p class="dropzone-subtitle">Supported formats: JPG, PNG, GIF</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Area -->
+          <div class="input-footer">
+            <!-- Analyze Button -->
+            <button class="btn-analyze" id="analyze-btn" disabled>
+              <span class="btn-icon">✨</span>
+              <span>Analyze</span>
+            </button>
+          </div>
+
+          <!-- Loading -->
+          <div class="loading hidden" id="loading">
+            <div class="spinner"></div>
+            <div class="loading-text">Analyzing with AI...</div>
+          </div>
+        </div>
+
+        <!-- Footer note -->
+        <p class="disclaimer">
+          ⚠️ This tool estimates risk based on patterns. Always verify using trusted sources.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <!-- App script -->
+  <script src="js/app.js"></script>
 </body>
 </html>
