@@ -4,6 +4,8 @@ Handles communication with Google Gemini API
 """
 import google.generativeai as genai
 from app.config import GEMINI_API_KEY
+from PIL import Image
+import io
 
 
 class GeminiService:
@@ -11,11 +13,12 @@ class GeminiService:
     
     def __init__(self):
         """Initialize Gemini with API key"""
-        genai.configure(api_key=GEMINI_API_KEY)
-        self.model = genai.GenerativeModel('gemini-pro')
-        self.vision_model = genai.GenerativeModel('gemini-pro-vision')
+        if GEMINI_API_KEY:
+            genai.configure(api_key=GEMINI_API_KEY)
+        self.model = genai.GenerativeModel('gemini-2.0-flash')
+        self.vision_model = genai.GenerativeModel('gemini-2.0-flash')
     
-    def analyze_text(self, content: str) -> str:
+    async def analyze_text(self, content: str) -> str:
         """
         Analyze text content using Gemini
         
@@ -25,39 +28,75 @@ class GeminiService:
         Returns:
             Analysis result from Gemini
         """
-        prompt = f"""Analyze the following content for misinformation, bias, and reliability:
+        prompt = f"""You are a fact-checking and misinformation detection expert. Analyze the following content for accuracy, misinformation, bias, and reliability.
 
+CONTENT TO ANALYZE:
 {content}
 
-Please provide:
-1. Overall reliability assessment (high/medium/low/unreliable)
-2. Key claims identified
-3. Fact-check results
-4. Potential biases or red flags
-5. Recommendations for verification
+Please provide a structured analysis with the following sections:
 
-Format the response clearly with sections."""
+## Reliability Assessment
+[State if the content is: reliable, doubtful, needs_verification, or potentially_false]
+
+## Key Findings
+- [List the main claims or statements found]
+- [Note any factual errors or misleading information]
+- [Identify potential biases]
+
+## Reasons for Assessment
+- [Explain why you rated it this way]
+- [List specific red flags or positive indicators]
+
+## Verification Tips
+- [Suggest how to verify this information]
+- [Recommend sources to cross-reference]
+
+Be specific and helpful in your analysis."""
         
-        response = self.model.generate_content(prompt)
-        return response.text
+        try:
+            response = self.model.generate_content(prompt)
+            return response.text
+        except Exception as e:
+            return f"Analysis could not be completed: {str(e)}. Please verify the content manually through trusted sources."
     
-    def analyze_image(self, image_data) -> str:
+    async def analyze_image(self, image_path: str) -> str:
         """
         Analyze image using Gemini Vision
         
         Args:
-            image_data: Image file or bytes
+            image_path: Path to image file
             
         Returns:
             Analysis result from Gemini
         """
-        prompt = """Analyze this image for misinformation, manipulated content, or misleading elements.
+        prompt = """You are an expert at detecting manipulated, misleading, or fake images. Analyze this image thoroughly.
+
+Please provide a structured analysis with:
+
+## Image Description
+[Describe what the image shows]
+
+## Reliability Assessment
+[State if the image appears: reliable, doubtful, needs_verification, or potentially_false]
+
+## Signs of Manipulation
+- [List any signs of digital manipulation, editing, or AI generation]
+- [Note any inconsistencies in lighting, shadows, or proportions]
+
+## Context Concerns
+- [Identify if the image could be misleading when taken out of context]
+- [Note any concerning elements]
+
+## Verification Tips
+- [Suggest how to verify this image's authenticity]
+- [Recommend reverse image search or other tools]
+
+Be thorough and specific in your analysis."""
         
-Please provide:
-1. Content description
-2. Signs of manipulation or fakery
-3. Reliability assessment
-4. Recommendations"""
-        
-        response = self.vision_model.generate_content([prompt, image_data])
-        return response.text
+        try:
+            # Load and process image
+            img = Image.open(image_path)
+            response = self.vision_model.generate_content([prompt, img])
+            return response.text
+        except Exception as e:
+            return f"Image analysis could not be completed: {str(e)}. Please verify the image manually."

@@ -9,10 +9,10 @@ app = FastAPI(
     description="AI-powered misinformation detection system using Gemini"
 )
 
-# Configure CORS
+# Configure CORS - Allow all origins in debug mode
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.allowed_origins_list,
+    allow_origins=["*"] if settings.DEBUG else settings.allowed_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,8 +26,14 @@ async def root():
     return {
         "message": "Welcome to TruthBot API",
         "version": settings.APP_VERSION,
-        "docs": "/docs"
+        "docs": "/docs",
+        "health": "/api/health"
     }
+
+@app.get("/api/health")
+async def health():
+    """Health check endpoint at root level"""
+    return {"status": "healthy", "version": settings.APP_VERSION}
 
 if __name__ == "__main__":
     import uvicorn

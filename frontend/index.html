@@ -5,14 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TruthBot - AI Misinformation Detector</title>
     <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <!-- Header -->
         <header class="header">
             <div class="logo">
-                <h1>🔍 TruthBot</h1>
-                <p class="tagline">AI-Powered Misinformation Detection</p>
+                <div class="logo-icon">🔍</div>
+                <div class="logo-text">
+                    <h1>TruthBot</h1>
+                    <p class="tagline">AI-Powered Misinformation Detection</p>
+                </div>
             </div>
         </header>
 
@@ -21,8 +25,14 @@
             <!-- Input Section -->
             <section class="input-section">
                 <div class="tabs">
-                    <button class="tab-btn active" data-tab="text">Text Analysis</button>
-                    <button class="tab-btn" data-tab="file">File Upload</button>
+                    <button class="tab-btn active" data-tab="text">
+                        <span class="tab-icon">📝</span>
+                        <span>Text Analysis</span>
+                    </button>
+                    <button class="tab-btn" data-tab="file">
+                        <span class="tab-icon">📁</span>
+                        <span>File Upload</span>
+                    </button>
                 </div>
 
                 <!-- Text Input Tab -->
@@ -31,12 +41,16 @@
                         <label for="text-input">Enter text to analyze:</label>
                         <textarea 
                             id="text-input" 
-                            placeholder="Paste a tweet, article excerpt, or any text you want to verify..."
+                            placeholder="Paste a tweet, article excerpt, news headline, or any text you want to verify for misinformation..."
                             rows="8"
                         ></textarea>
-                        <button class="btn btn-primary" id="analyze-text-btn">
-                            <span>Analyze Text</span>
-                        </button>
+                        <div class="input-footer">
+                            <span class="char-count" id="char-count">0 characters</span>
+                            <button class="btn btn-primary" id="analyze-text-btn">
+                                <span class="btn-icon">🔍</span>
+                                <span>Analyze Text</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -46,12 +60,20 @@
                         <div class="upload-icon">📄</div>
                         <p class="upload-text">Drag & drop your file here</p>
                         <p class="upload-subtext">or click to browse</p>
+                        <p class="file-types">Supports: PDF, DOCX, TXT, JPG, PNG, GIF</p>
                         <input type="file" id="file-input" accept=".txt,.pdf,.docx,.doc,.jpg,.jpeg,.png,.gif" hidden>
-                        <button class="btn btn-secondary" id="browse-btn">Browse Files</button>
                     </div>
-                    <div class="file-info" id="file-info" style="display: none;">
-                        <p><strong>Selected:</strong> <span id="file-name"></span></p>
+                    <div class="file-info" id="file-info">
+                        <div class="file-preview">
+                            <span class="file-icon">📎</span>
+                            <div class="file-details">
+                                <p class="file-name" id="file-name"></p>
+                                <p class="file-size" id="file-size"></p>
+                            </div>
+                            <button class="btn-remove" id="remove-file-btn" title="Remove file">✕</button>
+                        </div>
                         <button class="btn btn-primary" id="analyze-file-btn">
+                            <span class="btn-icon">🔍</span>
                             <span>Analyze File</span>
                         </button>
                     </div>
@@ -59,58 +81,91 @@
             </section>
 
             <!-- Loading Indicator -->
-            <div class="loading" id="loading" style="display: none;">
-                <div class="spinner"></div>
-                <p>Analyzing content...</p>
+            <div class="loading" id="loading">
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Analyzing content with AI...</p>
+                    <p class="loading-subtext">This may take a few seconds</p>
+                </div>
             </div>
 
             <!-- Results Section -->
-            <section class="results-section" id="results-section" style="display: none;">
-                <h2>Analysis Results</h2>
+            <section class="results-section" id="results-section">
+                <div class="results-header">
+                    <h2>📊 Analysis Results</h2>
+                    <button class="btn btn-outline" id="new-analysis-btn">
+                        <span>+ New Analysis</span>
+                    </button>
+                </div>
                 
                 <div class="result-card">
-                    <div class="result-header">
+                    <!-- Reliability Badge -->
+                    <div class="result-summary">
                         <div class="reliability-badge" id="reliability-badge">
-                            <span class="badge-icon">⚠️</span>
-                            <span class="badge-text" id="badge-text">Unknown</span>
+                            <span class="badge-icon" id="badge-icon">⚠️</span>
+                            <div class="badge-info">
+                                <span class="badge-label">Status</span>
+                                <span class="badge-text" id="badge-text">Unknown</span>
+                            </div>
                         </div>
-                        <div class="confidence-score">
-                            <span class="confidence-label">Confidence:</span>
+                        <div class="confidence-meter">
+                            <span class="confidence-label">Confidence</span>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" id="confidence-fill"></div>
+                            </div>
                             <span class="confidence-value" id="confidence-value">0%</span>
                         </div>
                     </div>
 
-                    <div class="result-body">
-                        <div class="content-preview">
-                            <h3>Content Preview</h3>
+                    <!-- Content Preview -->
+                    <div class="result-section">
+                        <h3>📋 Content Preview</h3>
+                        <div class="content-preview-box">
                             <p id="content-preview"></p>
                         </div>
+                    </div>
 
-                        <div class="reasons">
-                            <h3>Analysis Reasons</h3>
-                            <ul id="reasons-list"></ul>
-                        </div>
+                    <!-- Reasons -->
+                    <div class="result-section">
+                        <h3>🔎 Key Findings</h3>
+                        <ul class="reasons-list" id="reasons-list"></ul>
+                    </div>
 
-                        <div class="tips">
-                            <h3>💡 Verification Tips</h3>
-                            <ul id="tips-list"></ul>
-                        </div>
+                    <!-- Tips -->
+                    <div class="result-section">
+                        <h3>💡 Verification Tips</h3>
+                        <ul class="tips-list" id="tips-list"></ul>
+                    </div>
 
-                        <div class="analysis-details" id="analysis-details-section">
-                            <h3>Detailed Analysis</h3>
-                            <p id="analysis-details"></p>
+                    <!-- Detailed Analysis -->
+                    <div class="result-section collapsible" id="analysis-details-section">
+                        <button class="collapse-toggle" id="toggle-details">
+                            <h3>📝 Detailed Analysis</h3>
+                            <span class="toggle-icon">▼</span>
+                        </button>
+                        <div class="collapse-content" id="collapse-content">
+                            <div class="analysis-details-box">
+                                <p id="analysis-details"></p>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <button class="btn btn-secondary" id="new-analysis-btn">Analyze Another</button>
             </section>
+
+            <!-- Error Section -->
+            <div class="error-section" id="error-section">
+                <div class="error-content">
+                    <span class="error-icon">⚠️</span>
+                    <p class="error-message" id="error-message"></p>
+                    <button class="btn btn-secondary" id="retry-btn">Try Again</button>
+                </div>
+            </div>
         </main>
 
         <!-- Footer -->
         <footer class="footer">
-            <p>TruthBot - Nuit de l'Info 2024 | AI4GOOD Challenge</p>
-            <p class="disclaimer">⚠️ This tool provides AI-assisted analysis. Always verify through multiple sources.</p>
+            <p>TruthBot - AI4GOOD Challenge | Nuit de l'Info 2024</p>
+            <p class="disclaimer">⚠️ This tool provides AI-assisted analysis. Always verify through multiple reliable sources.</p>
         </footer>
     </div>
 

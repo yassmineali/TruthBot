@@ -1,14 +1,16 @@
 /**
- * API communication module
+ * TruthBot - API Communication Module
  */
 
 const API_BASE_URL = 'http://localhost:8000/api';
 
-class APIClient {
+const api = {
     /**
      * Analyze text content
+     * @param {string} content - Text to analyze
+     * @returns {Promise<Object>} Analysis result
      */
-    static async analyzeText(content) {
+    async analyzeText(content) {
         try {
             const response = await fetch(`${API_BASE_URL}/analyze/text`, {
                 method: 'POST',
@@ -22,20 +24,25 @@ class APIClient {
             });
 
             if (!response.ok) {
-                throw new Error(`API error: ${response.status}`);
+                const error = await response.json().catch(() => ({}));
+                throw new Error(error.detail || `Server error: ${response.status}`);
             }
 
             return await response.json();
         } catch (error) {
-            console.error('Text analysis error:', error);
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error('Cannot connect to server. Please ensure the backend is running.');
+            }
             throw error;
         }
-    }
+    },
 
     /**
-     * Upload file for analysis
+     * Upload and analyze a file
+     * @param {File} file - File to analyze
+     * @returns {Promise<Object>} Analysis result
      */
-    static async uploadFile(file) {
+    async analyzeFile(file) {
         try {
             const formData = new FormData();
             formData.append('file', file);
@@ -46,49 +53,39 @@ class APIClient {
             });
 
             if (!response.ok) {
-                throw new Error(`Upload error: ${response.status}`);
+                const error = await response.json().catch(() => ({}));
+                throw new Error(error.detail || `Upload error: ${response.status}`);
             }
 
             return await response.json();
         } catch (error) {
-            console.error('File upload error:', error);
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error('Cannot connect to server. Please ensure the backend is running.');
+            }
             throw error;
         }
-    }
+    },
 
     /**
-     * Get analysis results for uploaded file
+     * Check API health
+     * @returns {Promise<boolean>} True if healthy
      */
-    static async getAnalysis(fileId) {
+    async checkHealth() {
         try {
-            const response = await fetch(`${API_BASE_URL}/analyze/${fileId}`, {
+            const response = await fetch(`${API_BASE_URL}/health`, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 }
             });
-
+            
             if (!response.ok) {
-                throw new Error(`Analysis error: ${response.status}`);
+                throw new Error('API not healthy');
             }
-
-            return await response.json();
+            
+            return true;
         } catch (error) {
-            console.error('Analysis retrieval error:', error);
-            throw error;
+            throw new Error('Cannot connect to the analysis server');
         }
     }
-
-    /**
-     * Health check
-     */
-    static async healthCheck() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/health`);
-            return response.ok;
-        } catch (error) {
-            console.error('Health check failed:', error);
-            return false;
-        }
-    }
-}
+};

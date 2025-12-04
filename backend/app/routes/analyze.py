@@ -1,14 +1,14 @@
 """
 API routes for analysis endpoints
 """
-from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks
+from fastapi import APIRouter, UploadFile, File, HTTPException
 from app.services.analyzer_service import AnalyzerService
 from app.models import AnalysisRequest, AnalysisResult, FileUploadResponse
 from app.utils.file_handler import FileHandler
 import uuid
 from pathlib import Path
 
-router = APIRouter(prefix="/api", tags=["analysis"])
+router = APIRouter(tags=["analysis"])
 analyzer_service = AnalyzerService()
 file_handler = FileHandler()
 
@@ -25,22 +25,22 @@ async def analyze_text(request: AnalysisRequest):
         AnalysisResult with analysis
     """
     try:
-        result = analyzer_service.analyze_text(request.content)
+        result = await analyzer_service.analyze_text(request.content)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/analyze/upload", response_model=FileUploadResponse)
+@router.post("/analyze/upload", response_model=AnalysisResult)
 async def upload_and_analyze(file: UploadFile = File(...)):
     """
-    Upload a file and analyze it
+    Upload a file and analyze it directly
     
     Args:
         file: Uploaded file
         
     Returns:
-        FileUploadResponse with upload details and analysis preview
+        AnalysisResult with analysis
     """
     try:
         # Validate file
@@ -54,48 +54,18 @@ async def upload_and_analyze(file: UploadFile = File(...)):
         # Get file extension
         file_ext = Path(file.filename).suffix.lower()[1:]
         
-        # Extract preview
+        # Analyze the file directly
         if file_ext in ['jpg', 'jpeg', 'png', 'gif']:
-            preview = f"Image: {file.filename}"
+            result = await analyzer_service.analyze_image(file_path)
         else:
-            from app.services.extractor_service import ExtractorService
-            extractor = ExtractorService()
-            full_text = extractor.extract_text(file_path, file_ext)
-            preview = full_text[:200]
+            result = await analyzer_service.analyze_file(file_path, file_ext)
         
-        return FileUploadResponse(
-            status="success",
-            file_id=file_id,
-            file_name=file.filename,
-            content_preview=preview
-        )
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.get("/analyze/{file_id}", response_model=AnalysisResult)
-async def get_analysis(file_id: str):
-    """
-    Get analysis results for uploaded file
-    
-    Args:
-        file_id: ID of the file to analyze
+        # Clean up file after analysis
+        try:
+            file_handler.delete_file(file_id)
+        except:
+            pass
         
-    Returns:
-        AnalysisResult
-    """
-    try:
-        file_path = file_handler.get_file_path(file_id)
-        if not file_path.exists():
-            raise HTTPException(status_code=404, detail="File not found")
-        
-        # Determine file type
-        file_ext = file_path.suffix.lower()[1:]
-        
-        # Analyze
-        result = analyzer_service.analyze_file(str(file_path), file_ext)
         return result
     except HTTPException:
         raise
