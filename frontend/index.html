@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TruthBot Widget</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="truthbot-widget">
+        <h2 class="widget-title">🧐 TruthBot Analyzer</h2>
+        <p class="ethical-note">Analyze text snippets, tweets, or messages. **This tool provides an AI-driven assessment, not an absolute truth. Always verify claims.**</p>
+
+        <textarea id="text-input" placeholder="Paste the text or message you want to analyze here..." rows="6"></textarea>
+        
+        <button id="analyze-button">Analyze Content</button>
+        
+        <div id="loading-indicator" class="hidden">Analyzing...</div>
+
+        <div id="result-card" class="result-card hidden">
+            <h3 class="result-label" id="label-display"></h3>
+            
+            <p><strong>Confidence:</strong> <span id="confidence-display"></span></p>
+            
+            <h4>Reasons for this assessment:</h4>
+            <ul id="reasons-list">
+                </ul>
+
+            <div class="tip-section">
+                <strong>💡 Digital Literacy Tip:</strong> <span id="tip-display"></span>
+            </div>
+        </div>
+
+        <div id="error-message" class="error-message hidden">
+            <p><strong>⚠️ Error:</strong> <span id="error-text"></span></p>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
