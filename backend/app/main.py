@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routes import analyze
+from app.routes import conversations
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -20,6 +21,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(analyze.router, prefix="/api", tags=["Analysis"])
+app.include_router(conversations.router, prefix="/api", tags=["Conversations"])
 
 @app.get("/")
 async def root():
@@ -39,7 +41,7 @@ if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
         "app.main:app",
-        host="0.0.0.0",
+        host="127.0.0.1",
         port=8000,
         reload=settings.DEBUG
     )

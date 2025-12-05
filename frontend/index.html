@@ -85,6 +85,10 @@
                   <span class="attachment-icon">🖼</span>
                   <span>Upload Image</span>
                 </button>
+                <button class="attachment-option" id="attach-document">
+                  <span class="attachment-icon">📄</span>
+                  <span>Upload Document</span>
+                </button>
               </div>
             </div>
             <div class="input-meta">
@@ -92,11 +96,17 @@
             </div>
           </div>
 
-          <!-- Hidden File Input -->
+          <!-- Hidden File Inputs -->
           <input
             type="file"
             id="file-input"
             accept="image/png,image/jpeg,image/jpg,image/gif"
+            class="file-input hidden"
+          />
+          <input
+            type="file"
+            id="document-input"
+            accept=".pdf,.doc,.docx,.txt"
             class="file-input hidden"
           />
 
@@ -107,6 +117,18 @@
               <button type="button" class="btn-close-preview" id="btn-close-preview">✕</button>
             </div>
             <p class="image-filename" id="image-filename"></p>
+          </div>
+
+          <!-- Document Preview (shown when document is selected) -->
+          <div class="document-preview-container hidden" id="document-preview-container">
+            <div class="document-preview">
+              <div class="document-icon" id="document-icon">📄</div>
+              <button type="button" class="btn-close-preview" id="btn-close-document">✕</button>
+            </div>
+            <div class="document-info">
+              <p class="document-filename" id="document-filename"></p>
+              <p class="document-size" id="document-size"></p>
+            </div>
           </div>
 
           <!-- Image Mode (for drag and drop) -->
@@ -144,6 +166,8 @@
     </main>
   </div>
 
+  <!-- API script must load first -->
+  <script src="js/api.js"></script>
   <!-- App script -->
   <script src="js/app.js"></script>
 </body>

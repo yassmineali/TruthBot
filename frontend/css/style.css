@@ -350,6 +350,54 @@ body {
   word-break: break-word;
 }
 
+/* Document Preview */
+
+.document-preview-container {
+  margin-top: 12px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+  background: #f9fafb;
+  padding: 12px;
+}
+
+.document-preview {
+  position: relative;
+  width: 100%;
+  min-height: 120px;
+  border-radius: 8px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.document-icon {
+  font-size: 4rem;
+  opacity: 0.8;
+}
+
+.document-info {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.document-filename {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-main);
+  word-break: break-word;
+}
+
+.document-size {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
 .input-meta {
   display: flex;
   justify-content: flex-end;
